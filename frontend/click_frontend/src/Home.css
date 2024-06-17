@@ -1,38 +1,32 @@
 /* Home.css */
 .Home {
-  text-align: center;
-  background-color: #ccffcc; /* Lighter pastel green */
-  height: 100vh;
-  margin: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  padding-bottom: 20px;
+  justify-content: center;
+}
+
+.grey-box {
+  background-color: #e0e0e0; /* Light grey */
+  width: 100%;
+  height: 33%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .slider-container {
-  margin: 0 20px;
+  margin: 10px 0;
 }
 
 .slider-label {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+  color: black;
 }
 
-.Home .slider-container {
-  display: inline-block;
-}
-
-.Home {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.slider-wrapper {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  margin-bottom: 20px;
+input[type="range"] {
+  width: 200px;
 }
