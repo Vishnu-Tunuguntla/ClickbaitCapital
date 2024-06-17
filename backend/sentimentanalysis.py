@@ -19,7 +19,6 @@ def calculate_sentimate(df):
     df['sentiment'] = df['Combined'].apply(text_to_sentiment)
 
     # Display the DataFrame with sentiment scores
-    print(df)
     return df
 
 def testing_sentiment_analysis():

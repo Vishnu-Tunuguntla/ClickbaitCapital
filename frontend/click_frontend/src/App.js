@@ -1,10 +1,12 @@
 // App.js
-import React from 'react';
+import React, { useState } from 'react';
 import Home from './Home';
 
 function App() {
+  const [topStocks, setTopStocks] = useState([]);
+
   return (
-    <Home />
+    <Home topStocks={topStocks} setTopStocks={setTopStocks} />
   );
 }
 
