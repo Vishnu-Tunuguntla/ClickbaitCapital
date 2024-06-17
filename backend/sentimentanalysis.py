@@ -29,12 +29,15 @@ def testing_sentiment_analysis():
     import pandas as pd
     data = {
         'post_content': [
-            "I love this product! It has changed my life.",
-            "This is the worst service I have ever experienced.",
-            "I feel neutral about this.",
-            "This is an amazing opportunity, I'm thrilled!",
-            "I'm so sad about the outcome."
+            "The company’s quarterly earnings exceeded expectations, driving a significant uptick in share prices. Analysts are bullish about its future prospects.",
+            "Despite the recent product launch, the company's stock plummeted due to concerns over supply chain disruptions. Investors are bearish and worried about long-term impacts.",
+            "The firm announced a new partnership, which was met with mixed reactions from the market. While some see it as a strategic move, others are skeptical about its immediate benefits.",
+            "Oh great, another 'innovative' strategy that will probably result in layoffs. Just what the employees needed."
         ]
     }
     df = pd.DataFrame(data)
     calculate_sentimate(df)
+
+# Example usage
+if __name__ == "__main__":
+    testing_sentiment_analysis()
