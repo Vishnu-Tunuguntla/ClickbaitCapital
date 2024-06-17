@@ -40,7 +40,7 @@ def backend_pipeline(subreddit_name, post_limit, website_preferences):
 # Example usage
 if __name__ == "__main__":
     subreddit_name = "wallstreetbets"
-    post_limit = 30
+    post_limit = 25
     reddit_weight = 0.5
     twitter_weight = 0.3
     facebook_weight = 0.2

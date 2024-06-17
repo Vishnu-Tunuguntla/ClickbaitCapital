@@ -1,6 +1,7 @@
 import os
 import pandas as pd
-from openai import OpenAI
+from langchain_core.prompts import PromptTemplate
+from langchain_openai import OpenAI
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from fetch_reddit import get_reddit_instance, fetch_reddit_posts
@@ -9,18 +10,21 @@ from fetch_reddit import get_reddit_instance, fetch_reddit_posts
 class StockResponse(BaseModel):
     stock_name: Optional[str] = Field(description="The extracted stock name or ticker")
 
-# Create the prompt templates
-def create_stock_extraction_prompt(post: str) -> str:
-    return f"Extract only the stock names or tickers from this post. For multiple stocks, separate stocks using commas. If there is no stock, return Absent: \"{post}\""
-
-def create_relevant_info_prompt(post: str, stock: str) -> str:
-    return f"Extract only the information relevant to the stock {stock} from this post without altering the information: \"{post}\""
-
 # Initialize the OpenAI client
 openai_api_key = os.getenv('OPENAI_API_KEY')
-client = OpenAI(api_key=openai_api_key)
 if not openai_api_key:
     raise ValueError("OpenAI API key not found in environment variables")
+
+llm = OpenAI(api_key=openai_api_key)
+
+# Define the prompt template
+prompt_template = PromptTemplate(
+    input_variables=["post"],
+    template="Extract only the stock names or tickers from this post. For multiple stocks, separate stocks using commas. If there is no stock, return Absent: \"{post}\""
+)
+
+# Create the LLMChain
+chain = prompt_template | llm
 
 def extract_stock_names(post: str) -> List[str]:
     """
@@ -32,58 +36,11 @@ def extract_stock_names(post: str) -> List[str]:
     Returns:
     List[str]: The extracted stock names or tickers.
     """
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant that extracts stock names or tickers from posts."},
-            {"role": "user", "content": create_stock_extraction_prompt(post)}
-        ]
-    )
-    stock_names = response.choices[0].message.content.strip()
+    response = chain.invoke({"post": post})
+    stock_names = response.strip()
     if stock_names.lower() == "absent":
         return []
     return [name.strip() for name in stock_names.split(',')]
-
-def extract_relevant_info(post: str, stock: str) -> str:
-    """
-    Extract the information relevant to the stock from the post content.
-
-    Parameters:
-    post (str): The combined title and content of the post.
-    stock (str): The stock name or ticker.
-
-    Returns:
-    str: The relevant information for the stock.
-    """
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant that extracts relevant information for a specific stock from posts without altering the information."},
-            {"role": "user", "content": create_relevant_info_prompt(post, stock)}
-        ]
-    )
-    relevant_info = response.choices[0].message.content.strip()
-    return relevant_info
-
-def split_post_by_stocks(post: str, stock_names: List[str]) -> List[dict]:
-    """
-    Split the post content based on the extracted stock names and extract relevant information for each stock.
-
-    Parameters:
-    post (str): The combined title and content of the post.
-    stock_names (List[str]): The list of extracted stock names or tickers.
-
-    Returns:
-    List[dict]: A list of dictionaries with stock names and corresponding relevant post content.
-    """
-    split_posts = []
-    for stock in stock_names:
-        relevant_info = extract_relevant_info(post, stock)
-        split_posts.append({
-            "Stock": stock,
-            "Combined": relevant_info
-        })
-    return split_posts
 
 def filter_posts_with_stock_info(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -99,16 +56,6 @@ def filter_posts_with_stock_info(df: pd.DataFrame) -> pd.DataFrame:
     for _, row in df.iterrows():
         stock_names = extract_stock_names(row['Combined'])
 
-        # Turning off the splitting post feature here
-        # if stock_names:
-        #     if len(stock_names) > 1:
-        #         split_posts = split_post_by_stocks(row['Combined'], stock_names)
-        #         all_split_posts.extend(split_posts)
-        #     else:
-        #         all_split_posts.append({
-        #             "Stock": stock_names[0],
-        #             "Combined": row['Combined']
-        #         })
         if stock_names:
             all_split_posts.append({
                     "Stock": stock_names[0],
@@ -116,7 +63,6 @@ def filter_posts_with_stock_info(df: pd.DataFrame) -> pd.DataFrame:
                 })
 
     return pd.DataFrame(all_split_posts)
-    
 
 # Example usage
 if __name__ == "__main__":
