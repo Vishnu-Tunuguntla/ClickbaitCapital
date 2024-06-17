@@ -9,7 +9,7 @@ function Home() {
 
   return (
     <div className="Home">
-      <div className="slider-wrapper">
+      <div className="grey-box">
         <div className="slider-container">
           <div className="slider-label">Reddit: <span>{reddit}</span></div>
           <input
