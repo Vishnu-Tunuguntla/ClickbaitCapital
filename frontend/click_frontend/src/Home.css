@@ -1,0 +1,38 @@
+/* Home.css */
+.Home {
+  text-align: center;
+  background-color: #ccffcc; /* Lighter pastel green */
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 20px;
+}
+
+.slider-container {
+  margin: 0 20px;
+}
+
+.slider-label {
+  margin-bottom: 10px;
+}
+
+.Home .slider-container {
+  display: inline-block;
+}
+
+.Home {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.slider-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
