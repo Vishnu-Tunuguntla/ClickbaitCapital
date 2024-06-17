@@ -81,7 +81,7 @@ def split_post_by_stocks(post: str, stock_names: List[str]) -> List[dict]:
         relevant_info = extract_relevant_info(post, stock)
         split_posts.append({
             "Stock": stock,
-            "Content": relevant_info
+            "Combined": relevant_info
         })
     return split_posts
 
@@ -98,14 +98,21 @@ def filter_posts_with_stock_info(df: pd.DataFrame) -> pd.DataFrame:
     all_split_posts = []
     for _, row in df.iterrows():
         stock_names = extract_stock_names(row['Combined'])
+
+        # Turning off the splitting post feature here
+        # if stock_names:
+        #     if len(stock_names) > 1:
+        #         split_posts = split_post_by_stocks(row['Combined'], stock_names)
+        #         all_split_posts.extend(split_posts)
+        #     else:
+        #         all_split_posts.append({
+        #             "Stock": stock_names[0],
+        #             "Combined": row['Combined']
+        #         })
         if stock_names:
-            if len(stock_names) > 1:
-                split_posts = split_post_by_stocks(row['Combined'], stock_names)
-                all_split_posts.extend(split_posts)
-            else:
-                all_split_posts.append({
+            all_split_posts.append({
                     "Stock": stock_names[0],
-                    "Content": row['Combined']
+                    "Combined": row['Combined']
                 })
 
     return pd.DataFrame(all_split_posts)

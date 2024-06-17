@@ -16,7 +16,7 @@ def calculate_sentimate(df):
         return sentiment['compound']
 
     # Apply the sentiment analysis to each post
-    df['sentiment'] = df['post_content'].apply(text_to_sentiment)
+    df['sentiment'] = df['Combined'].apply(text_to_sentiment)
 
     # Display the DataFrame with sentiment scores
     print(df)
@@ -28,7 +28,7 @@ def testing_sentiment_analysis():
     # Sample DataFrame creation (You can replace this with your actual DataFrame)
     import pandas as pd
     data = {
-        'post_content': [
+        'Combined': [
             "The company’s quarterly earnings exceeded expectations, driving a significant uptick in share prices. Analysts are bullish about its future prospects.",
             "Despite the recent product launch, the company's stock plummeted due to concerns over supply chain disruptions. Investors are bearish and worried about long-term impacts.",
             "The firm announced a new partnership, which was met with mixed reactions from the market. While some see it as a strategic move, others are skeptical about its immediate benefits.",

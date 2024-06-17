@@ -56,6 +56,6 @@ def fetch_reddit_posts(reddit_instance, subreddit_name, post_limit=10):
 if __name__ == "__main__":
     reddit_instance = get_reddit_instance()
     subreddit_name = "wallstreetbets"
-    post_limit = 10
+    post_limit = 30
     fetched_posts_df = fetch_reddit_posts(reddit_instance, subreddit_name, post_limit)
     print(fetched_posts_df)
