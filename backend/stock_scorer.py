@@ -46,7 +46,11 @@ def test_score_stocks():
     }
     df = pd.DataFrame(data)
     df = df[df['Stock'].notna()]  # Remove rows without stock names
+    top_stocks = score_stocks(df, {'website1.com': 0.5, 'website2.com': 0.5, 'website3.com': 0.5})
 
     # Display the top 5 stocks
     print("Top 5 Suggested Stocks:")
     print(top_stocks[['Stock', 'preference_score']])
+
+if __name__ == "__main__":
+    test_score_stocks()
