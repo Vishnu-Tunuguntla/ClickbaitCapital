@@ -16,7 +16,7 @@ CORS(app, resources={r"/api/*": {"origins": [frontend_host]}})
 @app.route('/api/top-stocks', methods=['GET'])
 def get_top_stocks():
     subreddit_name = request.args.get('subreddit', default='wallstreetbets', type=str)
-    post_limit = request.args.get('limit', default=8, type=int)
+    post_limit = request.args.get('limit', default=25, type=int)
     reddit_weight = request.args.get('reddit_weight', default=0.5, type=float)
     twitter_weight = request.args.get('twitter_weight', default=0.3, type=float)
     facebook_weight = request.args.get('facebook_weight', default=0.2, type=float)

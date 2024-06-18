@@ -15,7 +15,7 @@ openai_api_key = os.getenv('OPENAI_API_KEY')
 if not openai_api_key:
     raise ValueError("OpenAI API key not found in environment variables")
 
-llm = OpenAI(api_key=openai_api_key, model="gpt-3.5-turbo-instruct")
+llm = OpenAI(api_key=openai_api_key)
 
 # Define the prompt template
 prompt_template = PromptTemplate(
