@@ -4,12 +4,12 @@ import './Home.css';
 
 function Home({ topStocks, setTopStocks }) {
   const [reddit, setReddit] = useState(5);
-  const [instagram, setInstagram] = useState(5);
+  const [twitter, setTwitter] = useState(5);
   const [facebook, setFacebook] = useState(5);
   const [isPolling, setIsPolling] = useState(false);
 
   const fetchTopStocks = async () => {
-    const response = await fetch(`http://localhost:5000/api/top-stocks?reddit_weight=${reddit/10}&twitter_weight=${instagram/10}&facebook_weight=${facebook/10}`);
+    const response = await fetch(`http://localhost:5000/api/top-stocks?reddit_weight=${reddit/10}&twitter_weight=${twitter/10}&facebook_weight=${facebook/10}`);
     const data = await response.json();
     setTopStocks(data);
   };
@@ -17,6 +17,9 @@ function Home({ topStocks, setTopStocks }) {
   const handleRunClick = () => {
     fetchTopStocks();
     setIsPolling(true);
+  };
+  const handleStopClick = () => {
+    setIsPolling(false);
   };
 
   useEffect(() => {
@@ -32,7 +35,7 @@ function Home({ topStocks, setTopStocks }) {
         clearInterval(interval);
       }
     };
-  }, [isPolling, reddit, instagram, facebook]);
+  }, [isPolling, reddit, twitter, facebook]);
 
   return (
     <div className="Home">
@@ -48,13 +51,13 @@ function Home({ topStocks, setTopStocks }) {
           />
         </div>
         <div className="slider-container">
-          <div className="slider-label">Instagram: <span>{instagram}</span></div>
+          <div className="slider-label">Twitter: <span>{twitter}</span></div>
           <input
             type="range"
             min="0"
             max="10"
-            value={instagram}
-            onChange={(e) => setInstagram(e.target.value)}
+            value={twitter}
+            onChange={(e) => setTwitter(e.target.value)}
           />
         </div>
         <div className="slider-container">
@@ -68,6 +71,7 @@ function Home({ topStocks, setTopStocks }) {
           />
         </div>
         <button onClick={handleRunClick}>Run</button>
+        <button onClick={handleStopClick}>Stop</button>
       </div>
       <div className="cards-container">
         {topStocks.map((stock, index) => (
