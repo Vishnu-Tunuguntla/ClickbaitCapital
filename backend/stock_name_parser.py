@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from langchain_core.prompts import PromptTemplate
-from langchain_openai import OpenAI
+from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from fetch_reddit import get_reddit_instance, fetch_reddit_posts
@@ -15,12 +15,12 @@ openai_api_key = os.getenv('OPENAI_API_KEY')
 if not openai_api_key:
     raise ValueError("OpenAI API key not found in environment variables")
 
-llm = OpenAI(api_key=openai_api_key)
+llm = ChatOpenAI(api_key=openai_api_key, model="gpt-4o")
 
 # Define the prompt template
 prompt_template = PromptTemplate(
     input_variables=["post"],
-    template="Extract only the stock names or tickers from this post. For multiple stocks, separate stocks using commas. If there is no stock, return Absent: \"{post}\""
+    template="Extract ONLY the stock names or tickers from this post. For multiple stocks, seperate by comma. For no Stocks, return Absent: \"{post}\""
 )
 
 # Create the LLMChain
@@ -37,10 +37,11 @@ def extract_stock_names(post: str) -> List[str]:
     List[str]: The extracted stock names or tickers.
     """
     response = chain.invoke({"post": post})
-    stock_names = response.strip()
+    stock_names = response.content.strip()  # Extract the content from the AIMessage object
     if stock_names.lower() == "absent":
         return []
     return [name.strip() for name in stock_names.split(',')]
+
 
 def filter_posts_with_stock_info(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -54,13 +55,17 @@ def filter_posts_with_stock_info(df: pd.DataFrame) -> pd.DataFrame:
     """
     all_split_posts = []
     for _, row in df.iterrows():
+    # Check if 'Combined' key exists and is not empty
+        if 'Combined' not in row or not row['Combined'].strip():
+            continue
+
         stock_names = extract_stock_names(row['Combined'])
 
         if stock_names:
             all_split_posts.append({
-                    "Stock": stock_names[0],
-                    "Combined": row['Combined']
-                })
+                "Stock": stock_names[0],
+                "Combined": row['Combined']
+            })
 
     return pd.DataFrame(all_split_posts)
 

@@ -9,8 +9,10 @@ from fetch_twitter import fetch_twitter_posts
 from fetch_twitter import get_twitter_client
 def fetch_and_process_reddit_posts(subreddit_name, post_limit=10):
     reddit_instance = get_reddit_instance()
-    fetched_posts_df = fetch_reddit_posts(reddit_instance, subreddit_name, post_limit)
-    return fetched_posts_df
+    fetched_posts_df = fetch_reddit_posts(reddit_instance, "wallstreetbets", post_limit // 2)
+    fetched_posts_df2 = fetch_reddit_posts(reddit_instance, "stocks", post_limit // 2)
+    combined_df = pd.concat([fetched_posts_df, fetched_posts_df2], ignore_index=True)
+    return combined_df
 
 def fetch_and_process_twitter_posts(keyword, tweet_limit=10):   
     twitter_client = get_twitter_client()
@@ -55,9 +57,9 @@ def backend_pipeline(subreddit_name,  post_limit, website_preferences):
 # Example usage
 if __name__ == "__main__":
     subreddit_name = "wallstreetbets"
-    post_limit = 10
-    reddit_weight = 0.5
-    twitter_weight = 0.5
+    post_limit = 50
+    reddit_weight = 0.4
+    twitter_weight = 0.6
     facebook_weight = 0.0
     website_preferences = {"reddit.com" : reddit_weight, 
                            "twitter.com" : twitter_weight, 
