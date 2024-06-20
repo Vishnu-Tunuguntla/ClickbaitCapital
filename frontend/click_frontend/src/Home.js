@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './Home.css';
 
 // Icon components
@@ -68,6 +69,21 @@ function Home({ topStocks, setTopStocks }) {
     }
   };
 
+  const prepareGraphData = useMemo(() => {
+    const data = {};
+    topStocks.forEach(stock => {
+      if (stock.History && Array.isArray(stock.History) && stock.History.length > 0) {
+        stock.History.forEach(([date, change]) => {
+          if (!data[date]) {
+            data[date] = { name: date };
+          }
+          data[date][stock.Stock] = change !== null ? Number(change).toFixed(2) : null;
+        });
+      }
+    });
+    return Object.values(data);
+  }, [topStocks]);
+
   return (
     <div className="Home">
       <div className="grey-box">
@@ -118,9 +134,9 @@ function Home({ topStocks, setTopStocks }) {
             {Array.isArray(topStocks) && topStocks.length > 0 ? (
               topStocks.map((stock, index) => (
                 <tr key={index}>
-                  <td>{stock.Stock || ''}</td>
-                  <td>{stock.Price || 'NA'}</td>
-                  <td>{stock.sentiment || ''}</td>
+                  <td>{stock.Stock || 'N/A'}</td>
+                  <td>{stock.Price !== 'NA' ? stock.Price : 'N/A'}</td>
+                  <td>{stock.sentiment !== null ? Number(stock.sentiment).toFixed(2) : 'N/A'}</td>
                   <td>{getIconForWebsite(stock.website)}</td>
                   <td>{timeSinceLastRefresh()}</td>
                 </tr>
@@ -132,6 +148,29 @@ function Home({ topStocks, setTopStocks }) {
             )}
           </tbody>
         </table>
+      </div>
+      
+      <div className="graph-container">
+        <h2>Daily Percent Change in Stock Prices</h2>
+        <ResponsiveContainer width="100%" height={400}>
+          <LineChart data={prepareGraphData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis label={{ value: 'Percent Change', angle: -90, position: 'insideLeft' }} />
+            <Tooltip />
+            <Legend />
+            {topStocks.map((stock, index) => (
+              <Line 
+                key={stock.Stock} 
+                type="monotone" 
+                dataKey={stock.Stock} 
+                stroke={`hsl(${index * 137.5 % 360}, 70%, 50%)`} 
+                activeDot={{ r: 8 }} 
+                connectNulls={true}
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
