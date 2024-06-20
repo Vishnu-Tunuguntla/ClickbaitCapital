@@ -43,6 +43,7 @@ def backend_pipeline(subreddit_name,  post_limit, website_preferences):
     sentiment_analysis_setup() # MOVE TO ONE TIME SETUP LATER
     reddit_df = calculate_sentimate(reddit_df)
     twitter_df = calculate_sentimate(twitter_df)
+    print(twitter_df)
 
     #SPECIFIC TO REDDIT
     reddit_df['website'] = 'reddit.com'
@@ -57,9 +58,9 @@ def backend_pipeline(subreddit_name,  post_limit, website_preferences):
 # Example usage
 if __name__ == "__main__":
     subreddit_name = "wallstreetbets"
-    post_limit = 50
-    reddit_weight = 0.4
-    twitter_weight = 0.6
+    post_limit = 30
+    reddit_weight = 0.5
+    twitter_weight = 0.5
     facebook_weight = 0.0
     website_preferences = {"reddit.com" : reddit_weight, 
                            "twitter.com" : twitter_weight, 

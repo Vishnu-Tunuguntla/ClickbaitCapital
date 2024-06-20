@@ -34,7 +34,7 @@ function Home({ topStocks, setTopStocks }) {
     if (isPolling) {
       pollingInterval = setInterval(() => {
         fetchTopStocks();
-      }, 10000); // Fetch every 10 seconds
+      }, 20000); // Fetch every 20 seconds
     }
 
     return () => {

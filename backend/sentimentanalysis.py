@@ -18,6 +18,9 @@ def calculate_sentimate(df):
     # Apply the sentiment analysis to each post
     df['sentiment'] = df['Combined'].apply(text_to_sentiment)
 
+    # Remove rows where sentiment is 0
+    df = df[df['sentiment'] != 0]
+
     # Display the DataFrame with sentiment scores
     return df
 

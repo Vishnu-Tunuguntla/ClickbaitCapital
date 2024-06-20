@@ -4,8 +4,9 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start; /* Align items to the left */
+  justify-content: flex-start; /* Align items to the top */
+  padding: 20px; /* Add some padding for better spacing */
 }
 
 .grey-box {
@@ -64,14 +65,28 @@ button:hover {
 }
 
 .card {
-  background-color: white;
+  background-color: rgb(27, 26, 26);
   border: 1px solid #ddd;
   border-radius: 5px;
-  padding: 20px;
-  margin: 10px;
-  width: 90%;
+  padding: 30px; /* Increase padding for more space */
+  margin: 20px; /* Increase margin for more space between cards */
+  width: 100%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: left;
+  font-size: 3em; /* Increase font size */
 }
 
+.table-container {
+  width: 100%;
+}
 
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px 20px; /* Increase padding for larger gap */
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
