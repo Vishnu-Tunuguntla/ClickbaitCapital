@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './Home.css';
 
+const backendHost = "http://localhost:5000"; //"http://34.233.181.229:5000"; // "http://localhost:5000";
+
 // Icon components
 const HypeIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="icon">
@@ -42,7 +44,7 @@ function Home({ topStocks, setTopStocks }) {
   const fetchTopStocks = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/top-stocks?reddit_weight=${reddit/10}&twitter_weight=${twitter/10}&news_weight=${news/10}`);
+      const response = await fetch(`${backendHost}/api/top-stocks?reddit_weight=${reddit/10}&twitter_weight=${twitter/10}&news_weight=${news/10}`);
       const data = await response.json();
       setTopStocks(data);
       setLastRefresh(Date.now());

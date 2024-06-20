@@ -6,9 +6,9 @@ from flask_cors import CORS
 from backend_pipeline import backend_pipeline
 
 app = Flask(__name__)
+frontend_host = os.environ.get('FRONTEND_HOST', "*") 
+CORS(app, resources={r"/api/*": {"origins": [frontend_host]}}) # Allow all origins to access the API, change to frontend_host when deploying
 
-frontend_host = os.environ.get('FRONTEND_HOST', "*")
-CORS(app, resources={r"/api/*": {"origins": [frontend_host]}})
 
 @app.route('/api/top-stocks', methods=['GET'])
 def get_top_stocks():

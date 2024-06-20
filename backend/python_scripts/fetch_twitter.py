@@ -6,9 +6,9 @@ def get_twitter_client():
     """
     Initialize and return a Twitter client with credentials from environment variables.
     """
-    username = "vishnut04" #os.getenv('TWITTER_USERNAME')
-    email = "vtunuguntla022@gmail.com" #('TWITTER_EMAIL')
-    password = "zwx9gaw7akq.HZJ@ptk" # os.getenv('TWITTER_PASSWORD')
+    username = os.getenv('TWITTER_USERNAME')
+    email = os.getenv('TWITTER_EMAIL')
+    password = os.getenv('TWITTER_PASSWORD')
 
     if not all([username, email, password]):
         raise ValueError("Twitter credentials not found in environment variables")

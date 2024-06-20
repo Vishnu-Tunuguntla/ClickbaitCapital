@@ -7,18 +7,21 @@ def get_reddit_instance():
     """
     Initialize and return a Reddit instance with credentials from environment variable.
     """
-    reddit_credentials = os.getenv('REDDIT_CREDENTIALS')
-    if not reddit_credentials:
+    REDDIT_CLIENT_ID = os.environ.get("REDDIT_CLIENT_ID")
+    REDDIT_CLIENT_SECRET = os.environ.get("REDDIT_CLIENT_SECRET")
+    REDDIT_USER_AGENT = os.environ.get("REDDIT_USER_AGENT")
+    REDDIT_USERNAME = os.environ.get("REDDIT_USERNAME")
+    REDDIT_PASSWORD = os.environ.get("REDDIT_PASSWORD")
+    if not REDDIT_CLIENT_ID or not REDDIT_CLIENT_SECRET or not REDDIT_USER_AGENT or not REDDIT_USERNAME or not REDDIT_PASSWORD:
         raise ValueError("Reddit credentials not found in environment variables")
     
-    credentials = json.loads(reddit_credentials)
     
     reddit = praw.Reddit(
-        client_id=credentials['client_id'],
-        client_secret=credentials['client_secret'],
-        user_agent=credentials['user_agent'],
-        username=credentials['username'],
-        password=credentials['password']
+        client_id=REDDIT_CLIENT_ID,
+        client_secret=REDDIT_CLIENT_SECRET,
+        user_agent=REDDIT_USER_AGENT,
+        username=REDDIT_USERNAME,
+        password=REDDIT_PASSWORD
     )
     return reddit
 
