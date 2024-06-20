@@ -35,6 +35,28 @@ def get_top_gainers(limit=15):
     # If not empty, return the top tickers
     return screener_df['Ticker'].head(limit).tolist()
 
+def get_stock_price(ticker):
+    try:
+        stock = yf.Ticker(ticker)
+        price = stock.info.get("currentPrice")
+        return price if price else "NA"
+    except:
+        return "NA"
+
+def get_stock_history(ticker):
+    try:
+        stock = yf.Ticker(ticker)
+        hist = stock.history(period="5d")
+        if not hist.empty:
+            hist['Daily_Change'] = hist['Close'].pct_change() * 100
+            changes = hist['Daily_Change'].dropna().tolist()
+            dates = hist.index.strftime('%Y-%m-%d').tolist()[1:]  # Skip the first date as it has no change
+            return list(zip(dates, changes))
+        return []
+    except Exception as e:
+        print(f"Error fetching history for {ticker}: {str(e)}")
+        return []
+
 def get_news_for_ticker(ticker):
     stock = yf.Ticker(ticker)
     news = stock.news
@@ -44,7 +66,7 @@ def create_news_dataframe(tickers):
     data = []
     for ticker in tickers:
         news_titles = get_news_for_ticker(ticker)
-        row = {'Stock': ticker}
+        row = {'Stock': ticker, 'Price': get_stock_price(ticker), 'History': get_stock_history(ticker)}
         for i, title in enumerate(news_titles, 1):
             row[f'Article_{i}'] = title
         data.append(row)
@@ -62,6 +84,14 @@ def backend_pipeline(subreddit_name, post_limit, website_preferences):
     
     # Process twitter post to extract stock names and relevant info
     twitter_df = filter_posts_with_stock_info(posts_twitter_df)
+
+    # Add price information to reddit and twitter dataframes
+    reddit_df['Price'] = reddit_df['Stock'].apply(get_stock_price)
+    twitter_df['Price'] = twitter_df['Stock'].apply(get_stock_price)
+
+    # Add historical data to reddit and twitter dataframes
+    reddit_df['History'] = reddit_df['Stock'].apply(get_stock_history)
+    twitter_df['History'] = twitter_df['Stock'].apply(get_stock_history)
 
     # Perform sentiment analysis
     sentiment_analysis_setup() # MOVE TO ONE TIME SETUP LATER
@@ -90,9 +120,9 @@ def backend_pipeline(subreddit_name, post_limit, website_preferences):
 if __name__ == "__main__":
     subreddit_name = "wallstreetbets"
     post_limit = 30
-    reddit_weight = 0
-    twitter_weight = 1
-    news_weight = 0
+    reddit_weight = 0.3
+    twitter_weight = 0.3
+    news_weight = 0.4
     website_preferences = {"reddit.com": reddit_weight, 
                            "twitter.com": twitter_weight, 
                            "news": news_weight}

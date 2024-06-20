@@ -24,18 +24,33 @@ const TwitterIcon = () => (
   </svg>
 );
 
+// New Loading Icon component
+const LoadingIcon = () => (
+  <svg className="loading-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="50" r="45" />
+  </svg>
+);
+
 function Home({ topStocks, setTopStocks }) {
   const [reddit, setReddit] = useState(5);
   const [twitter, setTwitter] = useState(5);
   const [news, setNews] = useState(5);
   const [lastRefresh, setLastRefresh] = useState(null);
   const [currentTime, setCurrentTime] = useState(Date.now());
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchTopStocks = async () => {
-    const response = await fetch(`http://localhost:5000/api/top-stocks?reddit_weight=${reddit/10}&twitter_weight=${twitter/10}&news_weight=${news/10}`);
-    const data = await response.json();
-    setTopStocks(data);
-    setLastRefresh(Date.now());
+    setIsLoading(true);
+    try {
+      const response = await fetch(`http://localhost:5000/api/top-stocks?reddit_weight=${reddit/10}&twitter_weight=${twitter/10}&news_weight=${news/10}`);
+      const data = await response.json();
+      setTopStocks(data);
+      setLastRefresh(Date.now());
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePollClick = () => {
@@ -117,7 +132,10 @@ function Home({ topStocks, setTopStocks }) {
             onChange={(e) => setNews(e.target.value)}
           />
         </div>
-        <button onClick={handlePollClick}>Poll</button>
+        <div className="button-container">
+          <button onClick={handlePollClick} disabled={isLoading}>Poll</button>
+          {isLoading && <LoadingIcon />}
+        </div>
       </div>
       <div className="table-container">
         <table>
@@ -143,35 +161,37 @@ function Home({ topStocks, setTopStocks }) {
               ))
             ) : (
               <tr>
-                <td colSpan="5">No data available</td>
+                <td colSpan="5" className="no-data-message">Click Poll!</td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
       
-      <div className="graph-container">
-        <h2>Daily Percent Change in Stock Prices</h2>
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={prepareGraphData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis label={{ value: 'Percent Change', angle: -90, position: 'insideLeft' }} />
-            <Tooltip />
-            <Legend />
-            {topStocks.map((stock, index) => (
-              <Line 
-                key={stock.Stock} 
-                type="monotone" 
-                dataKey={stock.Stock} 
-                stroke={`hsl(${index * 137.5 % 360}, 70%, 50%)`} 
-                activeDot={{ r: 8 }} 
-                connectNulls={true}
-              />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      {topStocks.length > 0 && (
+        <div className="graph-container">
+          <h2>Daily Percent Change in Stock Prices</h2>
+          <ResponsiveContainer width="100%" height={600}>
+            <LineChart data={prepareGraphData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis label={{ value: 'Percent Change', angle: -90, position: 'insideLeft' }} />
+              <Tooltip />
+              <Legend />
+              {topStocks.map((stock, index) => (
+                <Line 
+                  key={stock.Stock} 
+                  type="monotone" 
+                  dataKey={stock.Stock} 
+                  stroke={`hsl(${index * 137.5 % 360}, 70%, 50%)`} 
+                  activeDot={{ r: 8 }} 
+                  connectNulls={true}
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 }
